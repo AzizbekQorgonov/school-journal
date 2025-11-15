@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script defer src="../js/students.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+
+</head>
+
+<body class="min-h-screen bg-gradient-to-tr from-blue-400 via-white-400 to-pink-500
+">
+
+
+    <header
+        class="fixed top-0 w-full backdrop-blur py-5 px-4 sm:px-8 lg:px-32 backdrop-blur 2xl:px-[350px] z-20 flex flex-col backdrop-blur sm:flex-row gap-4 backdrop-blur sm:items-center backdrop-blur gap-[60px]">
+        <button id="add-students"
+            class="bg-gradient-to-r from-purple-500 via-sky-500 to-blue-500 ml-[200px] hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-lg px-4 sm:px-6 py-2 sm:py-3 transition-transform transform hover:scale-105">
+            Add Student
+        </button>
+
+        <form class="w-full sm:w-[400px] md:w-[500px] flex">
+            <input type="search" id="default-search"
+                class="flex-1 px-4 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Search Students...">
+            <button type="submit"
+                class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-r-lg transition-all">Search</button>
+        </form>
+    </header>
+
+    <main>
+        <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar"
+            aria-controls="default-sidebar" type="button"
+            class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <span class="sr-only">Open sidebar</span>
+            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path clip-rule="evenodd" fill-rule="evenodd"
+                    d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+                </path>
+            </svg>
+        </button>
+
+        <aside id="default-sidebar"
+            class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 bg-gray-50 dark:bg-gray-800"
+            aria-label="Sidebar">
+            <div class="h-full px-3 py-4 overflow-y-auto">
+                <ul class="space-y-2 font-medium">
+                    <li>
+                        <a href="../index.html"
+                            class="flex items-center justify-between p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                            <span class="ms-3">Teachers</span>
+                            <img class="max-w-[30px] w-full"
+                                src="data:image/png;base64,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"
+                                alt="Teachers Icon">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./students.html"
+                            class="flex items-center justify-between p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                            <span class="flex-1 ms-3 whitespace-nowrap">Students</span>
+                            <img class="max-w-[30px] w-full"
+                                src="data:image/png;base64,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"
+                                alt="Students Icon">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="p-4 sm:ml-64 mt-[130px] mx-12 mb-12">
+            <div class="p-4 border-2 border-gray-200 border rounded-lg dark:border-gray-700">
+                <h1 class="text-[30px] font-extrabold ">
+                    Students
+                </h1>
+                <div id="students" class="grid grid-cols-3 gap-4 mb-4 pt-[30px]">
+
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <div id="outer-modal"
+        class="hidden fixed z-[5] top-0 left-0 w-full h-full flex items-center justify-center bg-[grey]/60">
+        <form id="inner-modal" class="max-w-md mx-auto bg-[white] p-[40px]">
+
+
+
+            <div class="grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="text" name="floating_first_name" id="floating_first_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_first_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">First
+                        name</label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="text" name="floating_last_name" id="floating_last_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_last_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Last
+                        name</label>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="floating_phone" id="floating_phone"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_phone"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone
+                        number</label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="email" name="floating_company" id="floating_company"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_company"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email</label>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="number" name="floating_first_name" id="floating_first_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_first_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Age
+                    </label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="text" name="floating_last_name" id="floating_last_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_last_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Experience</label>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="text" name="floating_first_name" id="floating_first_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_first_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Grade</label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="text" name="floating_last_name" id="floating_last_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_last_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Avatar</label>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="number" name="floating_first_name" id="floating_first_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_first_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Rating</label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="text" name="floating_last_name" id="floating_last_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_last_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Profession</label>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-1 md:gap-6">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="text" name="floating_first_name" id="floating_first_name"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-black dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="floating_first_name"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Telegram</label>
+                </div>
+            </div>
+            <div class="pb-[30px] pt-[10px] flex items-center gap-[5px]">
+
+                <input class="w-[15px] h-[15px]" id="check" type="checkbox">
+                <label for="check">Male?</label>
+            </div>
+            <button type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+        </form>
+    </div>
+
+
+</body>
+
+</html>
